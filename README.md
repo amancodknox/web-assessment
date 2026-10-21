@@ -1,57 +1,91 @@
-# Web assessment (React, Node.js)
+# Daily Expense & Income Diary
 
-This repository is designed to test the technical skills of candidates for a full stack developer position. It consists of the following structure:
+Track daily income and expenses with full CRUD.
 
-- **Api**: The backend folder built with Node.js.
-- **Frontend**: The frontend folder built with React and Ant Design.
+- `Api` - Node.js, Express, MongoDB (Mongoose), JSON-schema validation (ajv), Jest
+- `FrontEnd` - React, TypeScript, Vite, Ant Design
 
-### Objective
+Test user (created automatically when the API starts): `test@meblabs.com` / `testtest`
 
-Expense and Income Diary: Create an application to track daily expenses and incomes. Users should be able to add, read, update, and delete expense and income entries.
+## Run with Docker
 
-### Task Description
+```bash
+docker compose up
+```
 
-1. **Clone this repository** to your local machine.
-2. Create a new repository on your own GitHub account.
-3. Push the cloned repository to your new GitHub repository.
-4. Implement a small API that performs CRUD operations as specified.
-5. Create a frontend application to interact with the CRUD API.
+- App: http://localhost:3000
+- API: http://localhost:4000
+- MongoDB: `localhost:27018`
 
+## Run without Docker
 
-**Note**:
-The template provides several features, helpers, and middleware for the backend, and components for the frontend. It is up to the candidate to choose whether to use them or not. You are not required to overdo or spend excessive time on this task. The exercise will be a discussion point, where you can justify your choices and explain any features you omitted due to time constraints or other reasons.
+Requires Node 20 and MongoDB running on `localhost:27017`.
 
-### Commit Guidelines
+```bash
+cd Api
+cp .env.example .env
+npm install
+npm run dev
+```
 
-Please make your commits in a structured and meaningful way. Ideally, follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+```bash
+cd FrontEnd
+npm install
+npm run dev
+```
 
-### Evaluation Criteria
+## Tests
 
-1. **Code Quality**: Clean, well-structured, and commented code.
-2. **Functionality**: The CRUD operations work as expected and are tested in the `api/specs` folder.
-3. **UI/UX**: The frontend is user-friendly and visually appealing.
+```bash
+cd Api
+npm test
+```
 
-### Requirements
+Tests run against an in-memory MongoDB, so no database is needed.
 
-- [Node.js](https://nodejs.org/) (use version 20.x)
-- [npm](https://www.npmjs.com/)
-- [VSCode](https://code.visualstudio.com/) (recommended extensions: [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode))
+## API structure
 
-### Getting Started
+```
+Api/
+├── app.js            Express app
+├── index.js          Connects to MongoDB, seeds the test user, starts the server
+├── config.js         Transaction types, categories, sortable fields
+├── controllers/      Request handlers
+├── db/               Connection, test connection, seed
+├── helpers/          Errors, JWT
+├── middlewares/      Auth, validation, error handler
+├── models/           User, Transaction
+├── routes/           Route definitions
+├── schema/           JSON schemas for request validation
+└── specs/            API tests
+```
 
-1. Clone the repository.
-2. Install the packages with `npm install` in both the `api` and `frontend` folders.
-3. Visit `http://localhost` to access the application. Use the following credentials, created by the seed process, to log in:
-   - **Email**: `test@meblabs.com`
-   - **Password**: `testtest`
-4. Start coding!
+## Endpoints
 
-### Submission
+| Method | Path | |
+|---|---|---|
+| POST | /auth/login | Login, returns a token |
+| GET | /auth/me | Current user |
+| POST | /auth/logout | Logout |
+| GET | /transactions | List |
+| GET | /transactions/categories | Categories by type |
+| GET | /transactions/:id | Get one |
+| POST | /transactions | Create |
+| PUT | /transactions/:id | Update |
+| DELETE | /transactions/:id | Delete |
 
-- Record a 3-5mins of [Loom video](https://www.loom.com) showing how it works, including the expected and actual behavior if you're testing.
-- Once you’ve completed the tasks, send the result to https://forms.gle/1E2z5713vGV9vhr4A.
-- Please make sure that your repository is **public** or share access if it's private.
+Transaction routes need `Authorization: Bearer <token>`.
 
-### Deadline
+List query: `type`, `category`, `search`, `sortBy` (`date`, `amount`, `category`, `type`), `sortOrder` (`asc`, `desc`).
 
-Please complete and submit the result within 2 hour since you accepted the invitation, unless otherwise discussed.
+Example body:
+
+```json
+{
+  "type": "expense",
+  "amount": 250.5,
+  "category": "Food",
+  "date": "2026-10-01",
+  "description": "Lunch"
+}
+```
