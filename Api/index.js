@@ -1,22 +1,17 @@
-const fs = require('fs');
-const path = require('path');
-const dotenv = require('dotenv');
-
-if (process.env.ENV === 'dev' && fs.existsSync(path.resolve(__dirname, '.env.development'))) {
-  dotenv.config({
-    path: path.resolve(__dirname, '.env.development'),
-    override: true
-  });
-} else {
-  dotenv.config();
-}
+require('dotenv').config();
 
 const app = require('./app');
+const connect = require('./db/connect');
+const seed = require('./db/seed');
 
-// Replace MongoDB connection with mock database
-const { connectDB } = require('./db/mockDatabase');
-connectDB();
+const port = process.env.PORT || 4000;
 
-app.listen(process.env.PORT || 4000, () => {
-  console.log(`Server running on port ${process.env.PORT || 4000}`);
-});
+connect()
+  .then(seed)
+  .then(() => {
+    app.listen(port, () => console.log(`API running on port ${port}`));
+  })
+  .catch(err => {
+    console.error('Failed to start API:', err.message);
+    process.exit(1);
+  });

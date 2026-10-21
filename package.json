@@ -1,0 +1,11 @@
+{
+  "name": "expense-diary",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix Api install && npm --prefix FrontEnd install",
+    "dev:api": "npm --prefix Api run dev",
+    "dev:web": "npm --prefix FrontEnd run dev",
+    "test": "npm --prefix Api test",
+    "build": "npm --prefix FrontEnd run build"
+  }
+}

@@ -1,58 +1,23 @@
-const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const { verifyToken } = require('../helpers/auth');
+const { Unauthorized } = require('../helpers/response');
 
-// Mock user for testing
-const mockUser = {
-  id: '1',
-  email: 'test@meblabs.com',
-  name: 'Test User',
-  role: 'user'
-};
+module.exports = async (req, res, next) => {
+  const header = req.header('Authorization') || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return next(Unauthorized('Missing token'));
 
-const isAuth = (req, res, next) => {
-  // Check for token in cookies or Authorization header
-  let token = req.cookies?.accessToken;
-  
-  if (!token) {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.substring(7);
-    }
-  }
-  
-  if (!token) {
-    req.user = mockUser; // For testing, just use mock user
-    return next();
-  }
-  
+  let payload;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    req.user = decoded;
-    next();
-  } catch (error) {
-    // If token is invalid, still use mock user for testing
-    req.user = mockUser;
-    next();
+    payload = verifyToken(token);
+  } catch (err) {
+    return next(Unauthorized(err.name === 'TokenExpiredError' ? 'Session expired' : 'Invalid token'));
   }
-};
 
-const isAuthRt = (req, res, next) => {
-  req.user = mockUser;
-  next();
-};
+  const user = await User.findOne({ _id: payload.id, active: true });
+  if (!user || user.accessToken !== token) return next(Unauthorized('Invalid token'));
 
-const isAuthRtlogout = (req, res, next) => {
-  req.user = mockUser;
-  next();
-};
-
-const isAuthChangePassword = (req, res, next) => {
-  req.user = mockUser;
-  next();
-};
-
-module.exports = {
-  isAuth,
-  isAuthRt,
-  isAuthRtlogout,
-  isAuthChangePassword
+  req.user = user;
+  req.token = token;
+  return next();
 };

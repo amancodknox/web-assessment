@@ -1,8 +1,21 @@
 module.exports = {
-  langs: ['it', 'en'],
-  defaultLang: 'en',
-  COMMON_EMAIL: 'noreply@meblabs.com',
-  COMMON_EMAIL_NAME: '',
-  rateLimitMinute: 1,
-  rateLimitMax: 100
+  transactionTypes: ['income', 'expense'],
+  categories: {
+    income: ['Salary', 'Freelance', 'Business', 'Investment', 'Gift', 'Refund', 'Other'],
+    expense: [
+      'Food',
+      'Groceries',
+      'Transport',
+      'Rent',
+      'Utilities',
+      'Shopping',
+      'Entertainment',
+      'Health',
+      'Education',
+      'Travel',
+      'Bills',
+      'Other'
+    ]
+  },
+  sortableFields: ['date', 'amount', 'category', 'type', 'createdAt']
 };
