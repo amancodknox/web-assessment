@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f5f6fa;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tx-table .ant-table-thead > tr > th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.tx-table .ant-table-tbody > tr > td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.tx-actions {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.tx-table .ant-table-row:hover .tx-actions {
+  opacity: 1;
+}
+
+.type-option {
+  flex: 1;
+  height: auto !important;
+  padding: 10px 12px !important;
+  text-align: center;
+}
